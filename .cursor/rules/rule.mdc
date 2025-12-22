@@ -1,0 +1,32 @@
+---
+alwaysApply: true
+---
+# 项目概述
+
+这是一个开源的IM（即时通讯）项目，对标大厂和开源IM产品。
+
+### 技术架构
+vite+ uniapp+vue3
+
+
+### 文件命名
+- 所有的文件不能以大写字母开头， 如果是多个单词采用驼峰命名
+- 文件名字如果我文件夹已经携带了xx， 这个子文件就不要在携带xxx开头的了
+
+### css的编写
+- 我使用less， 你的scss开发的时候采用嵌套结构
+
+### axios规范
+- 我的axios底层是renderModule/utils/request/ajax， 这里返回的数据是.data已经包好的， 同时没有异常
+- renderModule/utils/request/ajax 底层封装了header相关的，各个模块不要在加了。
+- 主进程的api在 mainModule/api 渲染进程的在 renderModule/api
+- axios的接口的定义在 commonModule/type/ajax
+
+### vue文件编写规范
+- 不要 script lang="ts" setup 这种组件， 采用export default defineComponent这样的代码
+# 注意事项
+
+### 切记
+- 不要过度开发
+- 不要写md文件
+- 尽可能使用别名不要使用../之类的相对路径

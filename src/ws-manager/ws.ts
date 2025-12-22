@@ -2,6 +2,7 @@ import { getLocal } from "@/utils/local";
 import { ws } from '@/env.json'
 import type { IWsMessage } from '@/types/ws/command';
 import Logger from '@/logger/logger';
+import { syncManager } from '@/database/manager';
 
 /**
  * @description: WebSocket配置选项
@@ -10,6 +11,9 @@ interface WsConfig {
   reconnectInterval?: number; // 重连间隔时间
   maxReconnectAttempts?: number; // 最大重连次数
   heartbeatInterval?: number; // 心跳间隔
+  connectionQualityCheckInterval?: number; // 连接质量检测间隔
+  maxHeartbeatFailures?: number; // 最大心跳失败次数
+  networkRecoveryDelay?: number; // 网络恢复后的延迟重连时间
 }
 
 /**
@@ -34,12 +38,22 @@ class WsManager {
   private reconnectInterval: number;
   private maxReconnectAttempts: number;
   private heartbeatInterval: number;
+  private connectionQualityCheckInterval: number;
+  private maxHeartbeatFailures: number;
+  private networkRecoveryDelay: number;
+
   private reconnectTimer: number | null = null;
   private heartbeatTimer: number | null = null;
+  private connectionQualityTimer: number | null = null;
+  private networkRecoveryTimer: number | null = null;
   private reconnectAttempts = 0;
+  private heartbeatFailures = 0;
   private lastHeartbeatTime: number = 0; // 最后一次心跳时间
   private heartbeatTimeoutTimer: number | null = null; // 心跳超时定时器
   private isManualClose = false; // 是否手动关闭
+  private isNetworkAvailable = true; // 网络是否可用
+  private isAppInBackground = false; // 应用是否在后台
+  private lastNetworkStatus: 'wifi' | '2g' | '3g' | '4g' | '5g' | 'none' | 'unknown' = 'unknown';
   private eventCallbacks: WsEventCallbacks = {};
   
   public isConnected = false;
@@ -50,9 +64,14 @@ class WsManager {
     this.reconnectInterval = config.reconnectInterval || 5000;
     this.maxReconnectAttempts = config.maxReconnectAttempts || 5;
     this.heartbeatInterval = config.heartbeatInterval || 30000;
+    this.connectionQualityCheckInterval = config.connectionQualityCheckInterval || 60000; // 1分钟检查一次连接质量
+    this.maxHeartbeatFailures = config.maxHeartbeatFailures || 3;
+    this.networkRecoveryDelay = config.networkRecoveryDelay || 2000; // 网络恢复后2秒再连接
 
     this.initEventListeners();
     this.initAppStateListeners();
+    this.initNetworkStatusListener();
+    this.startConnectionQualityCheck();
   }
 
   /**
@@ -73,33 +92,106 @@ class WsManager {
   }
 
   /**
+   * @description: 初始化网络状态监听
+   */
+  private initNetworkStatusListener(): void {
+    // 监听详细网络状态变化
+    uni.onNetworkStatusChange((res) => {
+      console.log('网络状态变化:', res);
+      const wasNetworkAvailable = this.isNetworkAvailable;
+      this.isNetworkAvailable = res.isConnected;
+      this.lastNetworkStatus = res.networkType as any;
+
+      if (res.isConnected && !wasNetworkAvailable) {
+        // 网络从不可用变为可用
+        console.log('网络恢复，延迟重连以确保网络稳定');
+        this.scheduleNetworkRecoveryReconnect();
+      } else if (!res.isConnected && wasNetworkAvailable) {
+        // 网络从可用变为不可用
+        console.log('网络断开，停止重连尝试');
+        this.handleNetworkUnavailable();
+      }
+    });
+  }
+
+  /**
    * @description: 初始化应用状态监听
    */
   private initAppStateListeners(): void {
-    // 监听网络状态变化
-    uni.onNetworkStatusChange((res) => {
-      console.log('网络状态变化:', res);
-      if (res.isConnected && !this.isConnected && !this.isManualClose) {
-        console.log('网络恢复，尝试重连');
-        setTimeout(() => {
-          this.initSocket();
-        }, 1000);
-      }
-    });
-
     // 监听应用状态变化
     uni.onAppShow(() => {
       console.log('应用进入前台');
-      if (!this.isConnected && !this.isManualClose) {
+      this.isAppInBackground = false;
+
+      // 应用回到前台，如果网络可用且未连接，则尝试连接
+      if (this.isNetworkAvailable && !this.isConnected && !this.isManualClose) {
         setTimeout(() => {
-          this.initSocket();
+          this.attemptReconnect('app_foreground');
         }, 500);
       }
     });
 
     uni.onAppHide(() => {
       console.log('应用进入后台');
+      this.isAppInBackground = true;
       this.clearHeartbeatTimeout();
+
+      // 应用进入后台时，可以保持连接但减少心跳频率
+      // 这里暂时保持现有逻辑
+    });
+  }
+
+  /**
+   * @description: 计划网络恢复后的重连
+   */
+  private scheduleNetworkRecoveryReconnect(): void {
+    this.clearNetworkRecoveryTimer();
+    this.networkRecoveryTimer = setTimeout(() => {
+      if (this.isNetworkAvailable && !this.isConnected && !this.isManualClose) {
+        this.attemptReconnect('network_recovery');
+      }
+    }, this.networkRecoveryDelay) as any;
+  }
+
+  /**
+   * @description: 处理网络不可用的情况
+   */
+  private handleNetworkUnavailable(): void {
+    console.log('网络不可用，清除所有重连定时器');
+    this.clearReconnectTimer();
+    this.clearNetworkRecoveryTimer();
+    this.reconnectAttempts = 0; // 重置重连次数，网络恢复后重新计算
+  }
+
+  /**
+   * @description: 尝试重连（统一的入口）
+   */
+  private attemptReconnect(reason: string): void {
+    console.log(`尝试重连，原因: ${reason}, 网络可用: ${this.isNetworkAvailable}, 应用后台: ${this.isAppInBackground}`);
+
+    // 只有在网络可用且应用在前台时才尝试重连
+    if (!this.isNetworkAvailable) {
+      console.log('网络不可用，跳过重连');
+      return;
+    }
+
+    if (this.isAppInBackground) {
+      console.log('应用在后台，跳过重连');
+      return;
+    }
+
+    if (this.isConnected || this.status === 'connecting') {
+      console.log('已经连接或正在连接中，跳过重连');
+      return;
+    }
+
+    if (this.isManualClose) {
+      console.log('手动关闭状态，跳过重连');
+      return;
+    }
+
+    this.initSocket().catch((error) => {
+      console.error('重连失败:', error);
     });
   }
 
@@ -107,6 +199,17 @@ class WsManager {
    * @description: 初始化WebSocket连接
    */
   public async initSocket(): Promise<void> {
+    // 增加更多的前置检查
+    if (!this.isNetworkAvailable) {
+      console.log('网络不可用，跳过连接');
+      return;
+    }
+
+    if (this.isAppInBackground) {
+      console.log('应用在后台，跳过连接');
+      return;
+    }
+
     if (this.isConnected || this.status === 'connecting') {
       return;
     }
@@ -159,9 +262,11 @@ class WsManager {
     this.isConnected = true;
     this.status = 'connected';
     this.reconnectAttempts = 0;
+    this.heartbeatFailures = 0; // 重置心跳失败次数
     this.clearTimers();
     this.startHeartbeat();
-    
+    this.startConnectionQualityCheck();
+
     // 触发连接成功回调
     if (this.eventCallbacks.onConnect) {
       this.eventCallbacks.onConnect();
@@ -191,12 +296,11 @@ class WsManager {
       this.eventCallbacks.onDisconnect();
     }
 
-    if (!this.isManualClose) {
-      // 如果是 1006 错误，稍微延长重连间隔
-      const delay = data.code === 1006 ? this.reconnectInterval * 2 : this.reconnectInterval;
-      setTimeout(() => {
-        this.reconnect();
-      }, Math.min(delay, 30000)); // 最大延迟 30 秒
+    // 只有在非手动关闭且网络可用且应用在前台时才尝试重连
+    if (!this.isManualClose && this.isNetworkAvailable && !this.isAppInBackground) {
+      this.attemptReconnect('connection_closed');
+    } else {
+      console.log('跳过重连: 手动关闭或网络不可用或应用在后台');
     }
   }
 
@@ -208,33 +312,80 @@ class WsManager {
     this.isConnected = false;
     this.status = 'error';
     this.clearTimers();
-    
+
     // 触发错误回调
     if (this.eventCallbacks.onError) {
       this.eventCallbacks.onError(error);
     }
-    
-    if (!this.isManualClose) {
-      setTimeout(() => {
-        this.reconnect();
-      }, this.reconnectInterval);
+
+    // 只有在网络可用且应用在前台时才尝试重连
+    if (!this.isManualClose && this.isNetworkAvailable && !this.isAppInBackground) {
+      this.attemptReconnect('connection_error');
     }
   }
 
   /**
-   * @description: 处理接收到的消息 - 只负责转发给消息处理器
+   * @description: 处理接收到的消息 - 转发给同步管理器和消息处理器
    */
   private onMessage(event: any): void {
     try {
       const data = JSON.parse(event.data);
       console.log('收到WebSocket消息:', data);
-      
-      // 转发给消息处理器
+
+      // 转发给同步管理器处理数据同步（自动更新本地数据库）
+      syncManager.handleWsMessage(data).catch((error) => {
+        console.error('同步管理器处理消息失败:', error);
+      });
+
+      // 触发连接活跃回调（用于重置心跳超时）
+      if (data.command === 'HEARTBEAT') {
+        this.resetHeartbeatTimeout();
+      }
+
+      // 转发给消息处理器（保持向后兼容）
       if (this.eventCallbacks.onMessage) {
         this.eventCallbacks.onMessage(data);
       }
+
+      // 广播消息事件给其他模块
+      this.broadcastMessage(data);
     } catch (error) {
       console.error('解析WebSocket消息失败:', error);
+    }
+  }
+
+  /**
+   * @description: 重置心跳超时
+   */
+  private resetHeartbeatTimeout(): void {
+    if (this.heartbeatTimeoutTimer) {
+      clearTimeout(this.heartbeatTimeoutTimer);
+      this.heartbeatTimeoutTimer = null;
+    }
+  }
+
+  /**
+   * @description: 广播消息事件
+   */
+  private broadcastMessage(message: IWsMessage): void {
+    // 通过 uni.$emit 广播消息事件，让其他页面/组件能够监听到
+    uni.$emit('ws_message', message);
+
+    // 同时通过全局事件广播
+    if (typeof getApp !== 'undefined') {
+      const app = getApp();
+      if (app && app.globalData) {
+        // 存储最新消息到全局状态
+        if (!app.globalData.latestMessages) {
+          app.globalData.latestMessages = [];
+        }
+        app.globalData.latestMessages.push(message);
+
+        // 只保留最近的10条消息
+        if (app.globalData.latestMessages.length > 10) {
+          app.globalData.latestMessages = app.globalData.latestMessages.slice(-10);
+        }
+      }
     }
   }
 
@@ -242,8 +393,13 @@ class WsManager {
    * @description: 重连机制
    */
   private reconnect(): void {
-    if (this.isManualClose || this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.log('达到最大重连次数或手动关闭，停止重连');
+    if (this.isManualClose || !this.isNetworkAvailable || this.isAppInBackground) {
+      console.log('跳过重连: 手动关闭或网络不可用或应用在后台');
+      return;
+    }
+
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      console.log('达到最大重连次数，停止重连');
       return;
     }
 
@@ -251,9 +407,7 @@ class WsManager {
     console.log(`第 ${this.reconnectAttempts} 次重连尝试`);
 
     this.reconnectTimer = setTimeout(() => {
-      this.initSocket().catch((error) => {
-        console.error('重连失败:', error);
-      });
+      this.attemptReconnect('reconnect_attempt');
     }, this.reconnectInterval) as any;
   }
 
@@ -272,6 +426,12 @@ class WsManager {
   private sendHeartbeat(): void {
     if (!this.isConnected) return;
 
+    // 如果应用在后台，减少心跳频率
+    if (this.isAppInBackground) {
+      console.log('应用在后台，跳过心跳');
+      return;
+    }
+
     const heartbeatMessage: IWsMessage = {
       command: 'HEARTBEAT' as any,
       content: {
@@ -283,9 +443,18 @@ class WsManager {
       }
     };
 
-    this._sendMessage(heartbeatMessage);
-    this.lastHeartbeatTime = Date.now();
-    this.startHeartbeatTimeout();
+    try {
+      this._sendMessage(heartbeatMessage);
+      this.lastHeartbeatTime = Date.now();
+      this.startHeartbeatTimeout();
+    } catch (error) {
+      console.error('发送心跳失败:', error);
+      this.heartbeatFailures++;
+      if (this.heartbeatFailures >= this.maxHeartbeatFailures) {
+        console.warn(`心跳失败次数达到上限(${this.maxHeartbeatFailures})，断开连接`);
+        this.disconnect();
+      }
+    }
   }
 
   /**
@@ -306,6 +475,51 @@ class WsManager {
     if (this.heartbeatTimeoutTimer) {
       clearTimeout(this.heartbeatTimeoutTimer);
       this.heartbeatTimeoutTimer = null;
+    }
+  }
+
+  /**
+   * @description: 清除网络恢复定时器
+   */
+  private clearNetworkRecoveryTimer(): void {
+    if (this.networkRecoveryTimer) {
+      clearTimeout(this.networkRecoveryTimer);
+      this.networkRecoveryTimer = null;
+    }
+  }
+
+  /**
+   * @description: 清除重连定时器
+   */
+  private clearReconnectTimer(): void {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+  }
+
+  /**
+   * @description: 开始连接质量检查
+   */
+  private startConnectionQualityCheck(): void {
+    this.connectionQualityTimer = setInterval(() => {
+      this.checkConnectionQuality();
+    }, this.connectionQualityCheckInterval) as any;
+  }
+
+  /**
+   * @description: 检查连接质量
+   */
+  private checkConnectionQuality(): void {
+    if (!this.isConnected) return;
+
+    const timeSinceLastHeartbeat = Date.now() - this.lastHeartbeatTime;
+    if (timeSinceLastHeartbeat > this.heartbeatInterval * 2) {
+      console.warn('连接质量差，最后心跳时间过久，主动重连');
+      this.disconnect();
+      setTimeout(() => {
+        this.attemptReconnect('connection_quality_check');
+      }, 1000);
     }
   }
 
@@ -347,13 +561,15 @@ class WsManager {
    * @description: 清除所有定时器
    */
   private clearTimers(): void {
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
+    this.clearReconnectTimer();
+    this.clearNetworkRecoveryTimer();
     if (this.heartbeatTimer) {
       clearInterval(this.heartbeatTimer);
       this.heartbeatTimer = null;
+    }
+    if (this.connectionQualityTimer) {
+      clearInterval(this.connectionQualityTimer);
+      this.connectionQualityTimer = null;
     }
     this.clearHeartbeatTimeout();
   }
@@ -393,7 +609,11 @@ class WsManager {
       isConnected: this.isConnected,
       status: this.status,
       reconnectAttempts: this.reconnectAttempts,
-      lastHeartbeatTime: this.lastHeartbeatTime
+      heartbeatFailures: this.heartbeatFailures,
+      lastHeartbeatTime: this.lastHeartbeatTime,
+      isNetworkAvailable: this.isNetworkAvailable,
+      lastNetworkStatus: this.lastNetworkStatus,
+      isAppInBackground: this.isAppInBackground
     };
   }
 }

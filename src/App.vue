@@ -1,7 +1,8 @@
 <script lang="ts">
 import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 import { getLocal } from './utils/local';
-import WsManager from '@/ws-manager/ws'
+import messageManager from '@/message-manager'
+import cacheManager from '@/cache'
 import { useInitStore } from '@/pinia/init/init'
 import { useThemeStore } from '@/pinia/theme/theme'
 import { track } from '@/logger/track'
@@ -14,7 +15,35 @@ export default {
 		const logger = new Logger('应用启动');		
 		onLaunch( async () => {
 			console.log("App Launch");
-			
+
+			// 初始化缓存管理器
+			try {
+				await cacheManager.init();
+				console.log('缓存管理器初始化成功');
+			} catch (error: any) {
+				logger.error({
+					text: '缓存管理器初始化失败',
+					data: {
+						error: error?.message || '未知错误'
+					}
+				});
+				console.error('缓存管理器初始化失败:', error);
+			}
+
+			// 初始化消息管理器
+			try {
+				messageManager.init();
+				console.log('消息管理器初始化成功');
+			} catch (error: any) {
+				logger.error({
+					text: '消息管理器初始化失败',
+					data: {
+						error: error?.message || '未知错误'
+					}
+				});
+				console.error('消息管理器初始化失败:', error);
+			}
+
 			// 初始化主题
 			const themeStore = useThemeStore();
 			themeStore.initTheme();
@@ -59,7 +88,8 @@ export default {
 
 
 		onHide(() => {
-
+			// 应用进入后台时的清理逻辑
+			console.log('应用进入后台');
 		});
 
 		return {
