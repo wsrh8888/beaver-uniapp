@@ -5,18 +5,18 @@ export interface ITextMsg {
 
 // 文件消息
 export interface IFileMsg {
-  fileName: string;
+  fileKey: string;
 }
 
 // 语音消息
 export interface IVoiceMsg {
-  fileName: string;
+  fileKey: string;
   duration: number;
 }
 
 // 视频消息
 export interface IVideoMsg {
-  fileName: string;
+  fileKey: string;
   width: number;
   height: number;
   duration: number;
@@ -24,14 +24,14 @@ export interface IVideoMsg {
 
 // 图片消息
 export interface IImageMsg {
-  fileName: string;
+  fileKey: string;
   width: number;
   height: number;
 }
 
 // 表情消息
 export interface IEmojiMsg {
-  fileName: string;
+  fileKey: string;
   emojiId: number;
   packageId: number;
 }
@@ -75,10 +75,10 @@ export interface IRecentChatListReq {
 
 // 会话信息响应
 export interface IConversationInfoRes {
-  fileName: string;
-  nickname: string;
+  avatar: string;
+  nickName: string;
   msg_preview: string;
-  update_at: string;
+  updated_at: string;
   is_top: boolean;
   conversationId: string;
   chatType: number;
@@ -93,8 +93,8 @@ export interface IRecentChatListRes {
 // 发送者信息
 export interface ISender {
   userId: string;
-  fileName: string;
-  nickname: string;
+  fileKey: string;
+  nickName: string;
 }
 
 // 发送消息响应
@@ -104,7 +104,7 @@ export interface ISendMsgRes {
   conversationId: string;
   msg: IMsg;
   sender: ISender;
-  create_at: string;
+  created_at: string;
   msgPreview: string;
   status: number;
 }
@@ -123,7 +123,7 @@ export interface IMessage {
   conversationId: string;
   msg: IMsg;
   sender: ISender;
-  create_at: string;
+  created_at: string;
   status: number;
 }
 

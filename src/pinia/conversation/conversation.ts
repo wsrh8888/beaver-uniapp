@@ -26,7 +26,7 @@ export const useConversationStore = defineStore('useConversationStore', {
         // 置顶的排在前面
         if (a.is_top !== b.is_top) return b.is_top ? 1 : -1;
         // 按最后消息时间排序
-        return new Date(b.update_at).getTime() - new Date(a.update_at).getTime();
+        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
       }).map(recentChatInfo => {
         // 判断是不是群组
         const groupStore = useGroupStore();
@@ -40,8 +40,8 @@ export const useConversationStore = defineStore('useConversationStore', {
           if (groupInfo) {
             return {
               ...recentChatInfo,
-              nickname: groupInfo.title,
-              fileName: groupInfo.fileName
+              nickName: groupInfo.title,
+              avatar: groupInfo.avatar
             };
           }
         }
@@ -74,9 +74,9 @@ export const useConversationStore = defineStore('useConversationStore', {
       if (friendInfo) {
         return {
           conversationId: friendInfo.conversationId,
-          fileName: friendInfo.fileName,
-          nickname: friendInfo.nickname,
-          update_at: new Date().toISOString(),
+          avatar: friendInfo.avatar,
+          nickName: friendInfo.nickName,
+          updated_at: new Date().toISOString(),
           is_top: false,
           msg_preview: '',
           chatType: 1
@@ -88,9 +88,9 @@ export const useConversationStore = defineStore('useConversationStore', {
       if (groupInfo) {
         return {
           conversationId: groupInfo.conversationId,
-          fileName: groupInfo.fileName,
-          nickname: groupInfo.title,
-          update_at: new Date().toISOString(),
+          avatar: groupInfo.avatar,
+          nickName: groupInfo.title,
+          updated_at: new Date().toISOString(),
           is_top: false,
           msg_preview: '',
           chatType: 2
@@ -195,7 +195,7 @@ export const useConversationStore = defineStore('useConversationStore', {
           // 置顶的排在前面
           if (a.is_top !== b.is_top) return b.is_top ? 1 : -1;
           // 按最后消息时间排序
-          return new Date(b.update_at).getTime() - new Date(a.update_at).getTime();
+          return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
         });
       }
     },
@@ -209,7 +209,7 @@ export const useConversationStore = defineStore('useConversationStore', {
       );
       if (chatIndex !== -1) {
         this._recentChatList[chatIndex].msg_preview = message.content;
-        this._recentChatList[chatIndex].update_at = message.timestamp;
+        this._recentChatList[chatIndex].updated_at = message.timestamp;
       }
     },
   },

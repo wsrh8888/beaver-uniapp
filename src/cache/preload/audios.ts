@@ -15,20 +15,20 @@ const filePromises = new Map<string, Promise<string>>();
 /**
  * 获取音频（主要接口）
  */
-export async function getAudio(fileName: string): Promise<string> {
+export async function getAudio(fileKey: string): Promise<string> {
   const platform = getPlatform();
   
   // 检查缓存
-  if (audioCache.has(fileName)) {
-    const cachedPath = audioCache.get(fileName)!;
-    console.log('发现音频缓存:', fileName, '->', cachedPath);
+  if (audioCache.has(fileKey)) {
+    const cachedPath = audioCache.get(fileKey)!;
+    console.log('发现音频缓存:', fileKey, '->', cachedPath);
     return cachedPath;
   }
   
   // 检查是否正在获取中
-  if (filePromises.has(fileName)) {
-    console.log('音频正在获取中，等待完成:', fileName);
-    return await filePromises.get(fileName)!;
+  if (filePromises.has(fileKey)) {
+    console.log('音频正在获取中，等待完成:', fileKey);
+    return await filePromises.get(fileKey)!;
   }
   
   // 创建获取Promise
@@ -36,45 +36,45 @@ export async function getAudio(fileName: string): Promise<string> {
     try {
       if (platform === 'h5') {
         // H5环境：直接返回URL
-        const url = previewOnlineFileApi(fileName);
-        audioCache.set(fileName, url);
+        const url = previewOnlineFileApi(fileKey);
+        audioCache.set(fileKey, url);
         return url;
       } else {
         // APP环境：下载到本地
-        const localPath = await downloadFile(fileName);
-        audioCache.set(fileName, localPath);
+        const localPath = await downloadFile(fileKey);
+        audioCache.set(fileKey, localPath);
         return localPath;
       }
     } catch (error) {
       console.error('获取音频失败:', error);
-      return previewOnlineFileApi(fileName);
+      return previewOnlineFileApi(fileKey);
     }
   })();
   
   // 保存Promise
-  filePromises.set(fileName, getPromise);
+  filePromises.set(fileKey, getPromise);
   
   try {
     const result = await getPromise;
     return result;
   } finally {
     // 清理Promise
-    filePromises.delete(fileName);
+    filePromises.delete(fileKey);
   }
 }
 
 /**
  * 预加载音频（同步等待完成）
  */
-export async function preloadAudio(fileName: string): Promise<void> {
+export async function preloadAudio(fileKey: string): Promise<void> {
   // 如果已经缓存，直接返回
-  if (audioCache.has(fileName)) {
+  if (audioCache.has(fileKey)) {
     return;
   }
   
   // 如果正在获取中，等待完成
-  if (filePromises.has(fileName)) {
-    await filePromises.get(fileName)!;
+  if (filePromises.has(fileKey)) {
+    await filePromises.get(fileKey)!;
     return;
   }
   
@@ -82,30 +82,30 @@ export async function preloadAudio(fileName: string): Promise<void> {
   
   if (platform === 'h5') {
     // H5环境：通过创建audio元素预加载到浏览器缓存
-    const audioUrl = previewOnlineFileApi(fileName);
+    const audioUrl = previewOnlineFileApi(fileKey);
     await new Promise<void>((resolve, reject) => {
       const audio = document.createElement('audio');
       audio.preload = 'metadata';
       audio.onloadedmetadata = () => {
-        audioCache.set(fileName, audioUrl); // 存储URL表示已缓存
+        audioCache.set(fileKey, audioUrl); // 存储URL表示已缓存
         resolve();
       };
       audio.onerror = () => {
-        console.error('预加载音频失败:', fileName);
-        reject(new Error(`预加载音频失败: ${fileName}`));
+        console.error('预加载音频失败:', fileKey);
+        reject(new Error(`预加载音频失败: ${fileKey}`));
       };
       audio.src = audioUrl;
     });
   } else {
     // APP环境：同步预加载，等待完成
-    await getAudio(fileName);
+    await getAudio(fileKey);
   }
 }
 
 /**
  * 通过fileName读取本地音频文件
  */
-export function getLocalAudioPath(fileName: string): string | null {
+export function getLocalAudioPath(fileKey: string): string | null {
   const platform = getPlatform();
   
   // H5环境：没有本地文件
@@ -114,17 +114,17 @@ export function getLocalAudioPath(fileName: string): string | null {
   }
   
   // APP环境：返回本地路径
-  return audioCache.get(fileName) || null;
+  return audioCache.get(fileKey) || null;
 }
 
 /**
  * 检查音频是否已缓存到本地
  */
-export function isAudioCached(fileName: string): boolean {
+export function isAudioCached(fileKey: string): boolean {
   const platform = getPlatform();
   
   // 检查缓存映射
-  if (!audioCache.has(fileName)) {
+  if (!audioCache.has(fileKey)) {
     return false;
   }
   
@@ -132,13 +132,13 @@ export function isAudioCached(fileName: string): boolean {
   if (platform !== 'h5') {
     try {
       // #ifdef APP-PLUS
-      const filePath = audioCache.get(fileName)!;
+      const filePath = audioCache.get(fileKey)!;
       // 这里可以添加文件存在性检查
       // 暂时返回true，实际使用时可以根据需要添加检查逻辑
       return true;
       // #endif
     } catch {
-      audioCache.delete(fileName);
+      audioCache.delete(fileKey);
       return false;
     }
   }
@@ -150,8 +150,8 @@ export function isAudioCached(fileName: string): boolean {
 /**
  * 清除指定文件的缓存
  */
-export function clearAudioCache(fileName: string): void {
-  audioCache.delete(fileName);
+export function clearAudioCache(fileKey: string): void {
+  audioCache.delete(fileKey);
 }
 
 /**

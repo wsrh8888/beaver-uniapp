@@ -38,11 +38,11 @@
         :style="{ animationDelay: index * 0.05 + 's' }"
       >
         <view class="request-avatar">
-          <BeaverImage :fileName="item.fileName" mode="aspectFill" />
+          <BeaverImage :fileKey="item.fileKey" mode="aspectFill" />
         </view>
         <view class="request-content">
           <view class="request-header">
-            <view class="request-name" :title="item.nickname">{{ item.nickname }}</view>
+            <view class="request-name" :title="item.nickName">{{ item.nickName }}</view>
             <view class="request-source" v-if="item.source">{{ getSourceText(item.source) }}</view>
           </view>
           <view class="request-message" :title="item.message || '请求加为好友'">{{ item.message || '请求加为好友' }}</view>
@@ -136,7 +136,7 @@ export default {
       if (searchKeyword.value) {
         const keyword = searchKeyword.value.toLowerCase();
         requests = requests.filter(item => 
-          item.nickname.toLowerCase().includes(keyword) || 
+          item.nickName.toLowerCase().includes(keyword) || 
           (item.message && item.message.toLowerCase().includes(keyword))
         );
       }
@@ -159,8 +159,8 @@ export default {
       activeTab.value = tab;
     };
 
-    const getAvatarUrl = (fileName: string) => {
-      return previewOnlineFileApi(fileName);
+    const getAvatarUrl = (fileKey: string) => {
+      return previewOnlineFileApi(fileKey);
     };
 
     const getStatusIcon = (status: number) => {

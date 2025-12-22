@@ -9,26 +9,26 @@ import { getVideo, clearAllVideoCache } from './preload/videos';
 /**
  * 获取文件（根据文件扩展名自动判断类型）
  */
-export async function getFile(fileName: string): Promise<string> {
-  const extension = fileName.split('.').pop()?.toLowerCase();
+export async function getFile(fileKey: string): Promise<string> {
+  const extension = fileKey.split('.').pop()?.toLowerCase();
   
   // 图片格式
   if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(extension || '')) {
-    return getImage(fileName);
+    return getImage(fileKey);
   }
   
   // 音频格式
   if (['mp3', 'wav', 'aac', 'ogg', 'm4a'].includes(extension || '')) {
-    return getAudio(fileName);
+    return getAudio(fileKey);
   }
   
   // 视频格式
   if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm'].includes(extension || '')) {
-    return getVideo(fileName);
+    return getVideo(fileKey);
   }
   
   // 默认作为图片处理
-  return getImage(fileName);
+  return getImage(fileKey);
 }
 
 /**

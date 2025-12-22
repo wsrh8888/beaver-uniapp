@@ -19,7 +19,7 @@ import { previewOnlineFileApi } from '@/api/file';
 export default {
   name: 'BeaverImage',
   props: {
-    fileName: {
+    fileKey: {
       type: String,
       required: true
     },
@@ -53,22 +53,22 @@ export default {
     });
     
     const updateImage = async () => {
-      if (!props.fileName) {
+      if (!props.fileKey) {
         imageSrc.value = '';
         return;
       }
       
       try {
-        imageSrc.value = await getFile(props.fileName);
+        imageSrc.value = await getFile(props.fileKey);
       } catch (error) {
         console.error('加载图片失败:', error);
         // 降级到直接URL
-        imageSrc.value = previewOnlineFileApi(props.fileName);
+        imageSrc.value = previewOnlineFileApi(props.fileKey);
       }
     };
     
-    // 监听 fileName 变化
-    watch(() => props.fileName, (newFileName, oldFileName) => {
+    // 监听 fileKey 变化
+    watch(() => props.fileKey, (newFileName, oldFileName) => {
       if (newFileName !== oldFileName) {
         updateImage();
       }

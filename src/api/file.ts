@@ -5,8 +5,8 @@ import { getLocal } from '@/utils/local';
 /**
  * @description: 预览文件
  */
-export const previewOnlineFileApi = (fileName: string) => {
-  return `${baseUrl}/api/file/preview/${fileName}`
+export const previewOnlineFileApi = (fileKey: string) => {
+  return `${baseUrl}/api/file/preview/${fileKey}`
 }
 
 
@@ -14,8 +14,8 @@ export const previewOnlineFileApi = (fileName: string) => {
 /**
  * @description: 上传文件到本地
  */
-export const uploadToLocalApi = (filePath: string, fileName?: string): Promise<{
-  fileName: string, 
+export const uploadToLocalApi = (filePath: string, fileKey?: string): Promise<{
+  fileKey: string, 
   originalName: string,
   fileInfo?: {
     type: string,
@@ -36,8 +36,8 @@ export const uploadToLocalApi = (filePath: string, fileName?: string): Promise<{
   return new Promise((resolve, reject) => {
     // 构建URL，如果有文件名则作为查询参数传递
     let uploadUrl = `${baseUrl}/api/file/uploadLocal`;
-    if (fileName) {
-      uploadUrl += `?fileName=${encodeURIComponent(fileName)}`;
+    if (fileKey) {
+      uploadUrl += `?fileKey=${encodeURIComponent(fileKey)}`;
     }
     
     uni.uploadFile({
@@ -65,8 +65,8 @@ export const uploadToLocalApi = (filePath: string, fileName?: string): Promise<{
 /**
  * @description: 上传文件到七牛云
  */
-export const uploadQiniuApi = (filePath: string, fileName?: string): Promise<{
-  fileName: string, 
+export const uploadQiniuApi = (filePath: string, fileKey?: string): Promise<{
+  fileKey: string, 
   originalName: string,
   fileInfo?: {
     type: string,
@@ -87,8 +87,8 @@ export const uploadQiniuApi = (filePath: string, fileName?: string): Promise<{
   return new Promise((resolve, reject) => {
     // 构建URL，如果有文件名则作为查询参数传递
     let uploadUrl = `${baseUrl}/api/file/uploadQiniu`;
-    if (fileName) {
-      uploadUrl += `?fileName=${encodeURIComponent(fileName)}`;
+    if (fileKey) {
+      uploadUrl += `?fileKey=${encodeURIComponent(fileKey)}`;
     }
     
     uni.uploadFile({
@@ -114,11 +114,11 @@ export const uploadQiniuApi = (filePath: string, fileName?: string): Promise<{
 
 
 // 
-export const uploadFileApi = (filePath: string, fileName?: string): Promise<any> => {
+export const uploadFileApi = (filePath: string, fileKey?: string): Promise<any> => {
   //  if(source === 'local') {
-  return uploadToLocalApi(filePath, fileName);
+  return uploadToLocalApi(filePath, fileKey);
   // } else if(source === 'qiniu') {
-    // return uploadQiniuApi(filePath, fileName);
+    // return uploadQiniuApi(filePath, fileKey);
   // }
   //  return Promise.reject(new Error('Invalid source'));
 }

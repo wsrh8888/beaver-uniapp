@@ -7,7 +7,7 @@ export interface IUserInfoReq {}
 export interface IUserInfoRes {
   userId: string;
   nickName: string;
-  fileName: string; // 修正：服务器端是fileName不是avatar
+  fileKey: string; // 修正：服务器端是fileName不是avatar
   abstract: string;
   
   phone?: string;
@@ -18,7 +18,7 @@ export interface IUserInfoRes {
 // 更新用户信息请求
 export interface IUpdateInfoReq {
   nickName?: string;
-  fileName?: string; // 修正：服务器端是fileName不是avatar
+  fileKey?: string; // 修正：服务器端是fileName不是avatar
   abstract?: string;
   gender?: number;
   email?: string;

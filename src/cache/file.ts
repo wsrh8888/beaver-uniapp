@@ -11,10 +11,10 @@ import { getAudio, preloadAudio } from './preload/audios';
 /**
  * 获取文件扩展名
  */
-function getFileExtension(fileName: string): string {
-  const lastDotIndex = fileName.lastIndexOf('.');
+function getFileExtension(fileKey: string): string {
+  const lastDotIndex = fileKey.lastIndexOf('.');
   if (lastDotIndex === -1) return '';
-  return fileName.substring(lastDotIndex + 1).toLowerCase();
+  return fileKey.substring(lastDotIndex + 1).toLowerCase();
 }
 
 /**
@@ -29,15 +29,15 @@ function groupFilesByType(fileNames: string[]): {
   const videos: string[] = [];
   const audios: string[] = [];
   
-  fileNames.forEach(fileName => {
-    const ext = getFileExtension(fileName);
+  fileNames.forEach(fileKey => {
+    const ext = getFileExtension(fileKey);
     
     if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico'].includes(ext)) {
-      images.push(fileName);
+      images.push(fileKey);
     } else if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv', '3gp', 'm4v'].includes(ext)) {
-      videos.push(fileName);
+      videos.push(fileKey);
     } else if (['mp3', 'wav', 'aac', 'ogg', 'flac', 'm4a', 'wma', 'amr'].includes(ext)) {
-      audios.push(fileName);
+      audios.push(fileKey);
     }
   });
   
@@ -47,8 +47,8 @@ function groupFilesByType(fileNames: string[]): {
 /**
  * 获取单个文件（主要接口）
  */
-export async function getFile(fileName: string): Promise<string> {
-  const results = await getFiles([fileName]);
+export async function getFile(fileKey: string): Promise<string> {
+  const results = await getFiles([fileKey]);
 
   return results[0] || '';
 }
@@ -70,15 +70,15 @@ export async function getFiles(fileNames: string[]): Promise<string[]> {
   const promises: Promise<string[]>[] = [];
   
   if (images.length > 0) {
-    promises.push(Promise.all(images.map(fileName => getImage(fileName))));
+    promises.push(Promise.all(images.map(fileKey => getImage(fileKey))));
   }
   
   if (videos.length > 0) {
-    promises.push(Promise.all(videos.map(fileName => getVideo(fileName))));
+    promises.push(Promise.all(videos.map(fileKey => getVideo(fileKey))));
   }
   
   if (audios.length > 0) {
-    promises.push(Promise.all(audios.map(fileName => getAudio(fileName))));
+    promises.push(Promise.all(audios.map(fileKey => getAudio(fileKey))));
   }
   
   const results = await Promise.all(promises);
@@ -88,8 +88,8 @@ export async function getFiles(fileNames: string[]): Promise<string[]> {
 /**
  * 预加载单个文件
  */
-export async function preloadFile(fileName: string): Promise<void> {
-  await preloadFiles([fileName]);
+export async function preloadFile(fileKey: string): Promise<void> {
+  await preloadFiles([fileKey]);
 }
 
 /**
@@ -109,15 +109,15 @@ export async function preloadFiles(fileNames: string[]): Promise<void> {
   const promises: Promise<void>[] = [];
   
   if (images.length > 0) {
-    promises.push(...images.map(fileName => preloadImage(fileName)));
+    promises.push(...images.map(fileKey => preloadImage(fileKey)));
   }
   
   if (videos.length > 0) {
-    promises.push(...videos.map(fileName => preloadVideo(fileName)));
+    promises.push(...videos.map(fileKey => preloadVideo(fileKey)));
   }
   
   if (audios.length > 0) {
-    promises.push(...audios.map(fileName => preloadAudio(fileName)));
+    promises.push(...audios.map(fileKey => preloadAudio(fileKey)));
   }
   
   await Promise.all(promises);

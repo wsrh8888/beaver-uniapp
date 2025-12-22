@@ -25,13 +25,13 @@
 				<view class="user-basic-info">
 					<view class="user-avatar">
 						<BeaverImage 
-							:fileName="userInfo.fileName"
+							:fileKey="userInfo.fileKey"
 							:image-class="'avatar-img'"
 						/>
 					</view>
 					<view class="user-details">
 						<view class="user-name-row">
-							<view class="user-name">{{ userInfo.remarkName || userInfo.nickname }}</view>
+							<view class="user-name">{{ userInfo.remarkName || userInfo.nickName }}</view>
 							<image v-if="userInfo.gender === 'male'" src="@/static/img/detail/gender-male-icon.svg" mode="aspectFit" class="gender-icon" />
 						</view>
 						<view class="user-id">ID: {{ userInfo.userId }}</view>
@@ -117,7 +117,7 @@
 <script lang="ts">
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { friendListApi, noticeUpdateApi, friendDeleteApi, friendInfoApi } from '@/api/friend';
+import { noticeUpdateApi, friendDeleteApi, friendInfoApi } from '@/api/friend';
 import BeaverLayout from '@/component/layout/layout.vue';
 import BeaverDialog from '@/component/dialog/index.vue';
 import BeaverImage from '@/component/image/image.vue';
@@ -137,8 +137,8 @@ export default {
 	setup() {
 		const userInfo = ref({
 			userId: '',
-			nickname: '',
-			fileName: '',
+			nickName: '',
+			fileKey: '',
 			remarkName: '',
 			signature: '',
 			gender: '',
@@ -181,8 +181,8 @@ export default {
 			const items = [];
 			
 			// 添加昵称
-			if (userInfo.value.nickname) {
-				items.push({ label: '昵称', value: userInfo.value.nickname });
+			if (userInfo.value.nickName) {
+				items.push({ label: '昵称', value: userInfo.value.nickName });
 			}
 			
 			// 添加性别

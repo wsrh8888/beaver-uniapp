@@ -124,8 +124,8 @@ export default {
       try {
         const data: ICreateMomentReq = {
           content: content.value,
-          files: mediaList.value.map((fileName: string) => ({
-            fileName
+          files: mediaList.value.map((fileKey: string) => ({
+            fileKey
           }))
         };
 
@@ -159,8 +159,8 @@ export default {
       // 朋友圈图片：2MB，中等质量
       const maxSize = 1 * 1024 * 1024; // 2MB
       openAlbum('album', 1, CompressMode.CUSTOM, maxSize).then((result: any) => {
-        if (result && result.fileName) {
-          mediaList.value.push(result.fileName);
+        if (result && result.fileKey) {
+          mediaList.value.push(result.fileKey);
         }
       });
     };
@@ -169,10 +169,10 @@ export default {
       mediaList.value.splice(index, 1);
     };
 
-    const previewImage = (fileName: string) => {
+    const previewImage = (fileKey: string) => {
       uni.previewImage({
         urls: mediaList.value.map((id: string) => id),
-        current: fileName
+        current: fileKey
       });
     };
 

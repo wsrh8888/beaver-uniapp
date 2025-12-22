@@ -17,8 +17,8 @@
         <!-- 卡片顶部 -->
         <view class="card-header">
           <view class="user-avatar">
-            <text v-if="!userInfo.fileName">{{ getUserInitial() }}</text>
-            <beaver-image v-else :file-name="userInfo.fileName" mode="aspectFill" class="avatar-img"></beaver-image>
+            <text v-if="!userInfo.fileKey">{{ getUserInitial() }}</text>
+            <beaver-image v-else :file-name="userInfo.fileKey" mode="aspectFill" class="avatar-img"></beaver-image>
           </view>
           <view class="user-info">
             <view class="user-name">{{ userInfo.nickName || APP_CONFIG.name }}</view>
@@ -104,11 +104,11 @@ export default {
     watch(userInfo, (newUserInfo) => {
       if (newUserInfo?.userId) {
         // 用户信息加载完成，更新logo
-        if (newUserInfo.fileName) {
-          options.value.logoImage = newUserInfo.fileName;
+        if (newUserInfo.fileKey) {
+          options.value.logoImage = newUserInfo.fileKey;
           // 强制更新options来触发二维码重新渲染
           options.value = {...options.value};
-          console.log('设置logo图片:', newUserInfo.fileName);
+          console.log('设置logo图片:', newUserInfo.fileKey);
         }
       }
     }, { immediate: true });
@@ -366,7 +366,7 @@ export default {
 }
 
 /* 头像内部高光 */
-.user-fileName::after {
+.user-fileKey::after {
   content: '';
   position: absolute;
   top: 0;

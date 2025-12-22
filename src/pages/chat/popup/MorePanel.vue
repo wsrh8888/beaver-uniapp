@@ -53,7 +53,7 @@ export default {
             const uploadResult = await openAlbum('album', 1, CompressMode.CUSTOM, maxSize) as any
             
             await pageChatStore.sendMessage({
-              fileName: uploadResult?.fileName,
+              fileKey: uploadResult?.fileKey,
               originalName: uploadResult?.originalName,
               width: uploadResult?.fileInfo?.imageFile?.width,
               height: uploadResult?.fileInfo?.imageFile?.height
@@ -78,7 +78,7 @@ export default {
             const maxSize = 1 * 1024 * 1024; // 1MB
             const uploadResult = await openAlbum('camera', 1, CompressMode.CUSTOM, maxSize) as any;
             await pageChatStore.sendMessage({
-              fileName: uploadResult?.fileName,
+              fileKey: uploadResult?.fileKey,
               originalName: uploadResult?.originalName || 'camera.jpg',
               width: uploadResult?.fileInfo?.imageFile?.width,
               height: uploadResult?.fileInfo?.imageFile?.height

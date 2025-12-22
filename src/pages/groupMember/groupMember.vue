@@ -145,25 +145,25 @@ export default {
     const groupOwner = computed(() => {
       const currentGroup = groupStore.getMembersByGroupId(groupId.value);
       if (!currentGroup) return {
-        userId: userStore.userInfo.userId,
+        userId: userStore.getUserId,
         nickName: userStore.userInfo.nickName,
-        fileName: userStore.userInfo.fileName,
+        fileKey: userStore.userInfo.fileKey,
         role: 2
       };
 
       // 查找群主
       const owner = currentGroup.find(member => member.role === 2);
       if (!owner) return {
-        userId: userStore.userInfo.userId,
+        userId: userStore.getUserId,
         nickName: userStore.userInfo.nickName,
-        fileName: userStore.userInfo.fileName,
+        fileKey: userStore.userInfo.fileKey,
         role: 2
       };
 
       return {
         userId: owner.userId,
-        nickName: owner.nickname,
-        fileName: owner.fileName,
+        nickName: owner.nickName,
+        fileKey: owner.fileKey,
         role: owner.role
       };
     });
@@ -172,7 +172,7 @@ export default {
     const groupMembers = computed(() => {
       const currentGroup = groupStore.getMembersByGroupId(groupId.value);
       if (!currentGroup) return [];
-      return currentGroup.filter(member => member.userId !== userStore.userInfo.userId);
+      return currentGroup.filter(member => member.userId !== userStore.getUserId);
     });
 
     // 过滤后的添加联系人列表
@@ -192,7 +192,7 @@ export default {
       const contacts = filteredAddContacts.value;
 
       contacts.forEach(contact => {
-        const letter = contact.nickname.charAt(0).toUpperCase();
+        const letter = contact.nickName.charAt(0).toUpperCase();
         let group = groups.find(g => g.letter === letter);
         if (!group) {
           group = { letter, contacts: [] };

@@ -53,7 +53,7 @@
               :key="index"
               class="image-preview"
             >
-              <image :src="item.fileName" mode="aspectFill" />
+              <image :src="item.fileKey" mode="aspectFill" />
               <view class="remove-image" @click="removeImage(index)">×</view>
             </view>
             
@@ -93,7 +93,7 @@ import Logger from '@/logger/logger';
 import { showToast } from '@/component/toast';
 
 interface UploadedImage {
-  fileName: string;
+  fileKey: string;
   name: string;
 }
 
@@ -172,7 +172,7 @@ export default {
       if (!canSubmit.value) return;
 
       try {
-        const fileNames = uploadedImages.value.map(image => image.fileName);
+        const fileNames = uploadedImages.value.map(image => image.fileKey);
         // 这里应该调用实际的提交API
         // const submit = await submitFeedbackApi({
         //   content: content.value,

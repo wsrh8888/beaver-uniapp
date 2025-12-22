@@ -19,7 +19,7 @@ export const useUserStore = defineStore('useUserStore', {
     userInfo: {
       userId: '',
       nickName: '',
-      fileName: '',
+      fileKey: '',
       abstract: '',
       gender: 0,
     }
@@ -38,16 +38,16 @@ export const useUserStore = defineStore('useUserStore', {
     async preloadUserAvatar() {
       const logger = new Logger('用户状态管理');
       try {
-        if (this.userInfo.fileName) {
-          console.log('预加载用户头像:', this.userInfo.fileName);
-          await preloadFile(this.userInfo.fileName);
+        if (this.userInfo.fileKey) {
+          console.log('预加载用户头像:', this.userInfo.fileKey);
+          await preloadFile(this.userInfo.fileKey);
         }
       } catch (error) {
         logger.error({
           text: '预加载用户头像失败',
           data: {
             error: error instanceof Error ? error.message : String(error),
-            fileName: this.userInfo.fileName
+            fileKey: this.userInfo.fileKey
           }
         });
         console.error('预加载用户头像失败:', error);
@@ -123,7 +123,7 @@ export const useUserStore = defineStore('useUserStore', {
       this.userInfo = {
         userId: '',
         nickName: '',
-        fileName: '',
+        fileKey: '',
         abstract: '',
         gender: 0,
       }

@@ -1,10 +1,10 @@
 <template>
   <view class="contact-item" @click="$emit('click', contact)">
     <view class="contact-avatar">
-      <BeaverImage class="contact-avatar-img" :fileName="contact.fileName" mode="aspectFill" />
+      <BeaverImage class="contact-avatar-img" :fileKey="contact.fileKey" mode="aspectFill" />
     </view>
     <view class="contact-info">
-      <view class="contact-name">{{ contact.nickname || contact.nickName }}</view>
+      <view class="contact-name">{{ contact.nickName || contact.nickName }}</view>
     </view>
     <view 
       v-if="showAction" 

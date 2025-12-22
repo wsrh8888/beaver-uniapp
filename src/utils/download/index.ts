@@ -10,18 +10,18 @@ import { getPlatform } from '../common';
 /**
  * 下载文件到本地（基础功能）
  */
-export async function downloadFile(fileName: string): Promise<string> {
+export async function downloadFile(fileKey: string): Promise<string> {
   const platform = getPlatform();
   
   // H5环境：直接返回URL
   if (platform === 'h5') {
-    return previewOnlineFileApi(fileName);
+    return previewOnlineFileApi(fileKey);
   }
   
   // APP环境：下载到本地
   try {
-    const url = previewOnlineFileApi(fileName);
-    console.log('准备下载文件:', fileName);
+    const url = previewOnlineFileApi(fileKey);
+    console.log('准备下载文件:', fileKey);
     console.log('下载URL:', url);
     
     // #ifdef APP-PLUS
@@ -47,7 +47,7 @@ export async function downloadFile(fileName: string): Promise<string> {
       });
     });
     
-    console.log('下载完成:', fileName, '->', result.tempFilePath);
+    console.log('下载完成:', fileKey, '->', result.tempFilePath);
     return result.tempFilePath;
     // #endif
     
@@ -56,6 +56,6 @@ export async function downloadFile(fileName: string): Promise<string> {
     // #endif
   } catch (error) {
     console.error('下载文件失败:', error);
-    return previewOnlineFileApi(fileName);
+    return previewOnlineFileApi(fileKey);
   }
 } 

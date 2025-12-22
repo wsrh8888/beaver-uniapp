@@ -128,8 +128,8 @@ export default {
     const emojiHeight = computed(() => pageChatStore.emojiHeight)
 
     // 处理图片URL
-    const getImageUrl = (fileName: string) => {
-      return previewOnlineFileApi(fileName)
+    const getImageUrl = (fileKey: string) => {
+      return previewOnlineFileApi(fileKey)
     }
 
     // 滚动事件处理
@@ -170,7 +170,7 @@ export default {
         const res = await getEmojisListApi({ page: 1, size: 50 })
         // 按时间倒序排列，最新的在前面
         favoriteEmojis.value = (res.result.list || []).sort((a: any, b: any) => {
-          return new Date(b.createdAt || b.create_at || 0).getTime() - new Date(a.createdAt || a.create_at || 0).getTime()
+          return new Date(b.createdAt || b.created_at || 0).getTime() - new Date(a.createdAt || a.created_at || 0).getTime()
         })
       } catch (error) {
         console.error('加载收藏表情失败:', error)
@@ -193,7 +193,7 @@ export default {
         const res = await getUserFavoritePackagesApi({ page: 1, size: 10 })
         // 按时间倒序排列，最新的在前面
         userFavoritePackages.value = (res.result.list || []).sort((a: any, b: any) => {
-          return new Date(b.createdAt || b.create_at || 0).getTime() - new Date(a.createdAt || a.create_at || 0).getTime()
+          return new Date(b.createdAt || b.created_at || 0).getTime() - new Date(a.createdAt || a.created_at || 0).getTime()
         })
       } catch (error) {
         console.error('加载用户收藏表情包失败:', error)

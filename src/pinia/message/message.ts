@@ -67,20 +67,20 @@ export const useMessageStore = defineStore('useMessageStore', {
       return messages
         .filter(msg => {
           // 图片消息 (type === 2)
-          if (msg.msg.type === 2 && msg.msg.imageMsg?.fileName) {
+          if (msg.msg.type === 2 && msg.msg.imageMsg?.fileKey) {
             return true;
           }
           // 表情消息 (type === 6)
-          if (msg.msg.type === 6 && msg.msg.emojiMsg?.fileName) {
+          if (msg.msg.type === 6 && msg.msg.emojiMsg?.fileKey) {
             return true;
           }
           return false;
         })
         .map(msg => {
           if (msg.msg.type === 2) {
-            return msg.msg.imageMsg!.fileName;
+            return msg.msg.imageMsg!.fileKey;
           } else {
-            return msg.msg.emojiMsg!.fileName;
+            return msg.msg.emojiMsg!.fileKey;
           }
         })
         .filter(Boolean);
@@ -182,7 +182,7 @@ export const useMessageStore = defineStore('useMessageStore', {
       const conversationStore = useConversationStore();
       conversationStore.updateLastMessage(conversationId, {
         content: message.msg.textMsg?.content || '',
-        timestamp: message.create_at
+        timestamp: message.created_at
       });
     },
 

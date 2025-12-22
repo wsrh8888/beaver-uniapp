@@ -6,7 +6,7 @@ export interface IUserInfo {
 
 export interface IBasicUserInfo {
   userId: string;
-  nickname: string;
+  nickName: string;
   avatar: string;
 }
 

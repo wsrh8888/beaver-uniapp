@@ -36,9 +36,9 @@ export const useWsStore = defineStore('useWsStore', {
           sender: {
             userId: '',
             avatar: '',
-            nickname: ''
+            nickName: ''
           },
-          create_at: '',
+          created_at: '',
           msgPreview: ''
         }
       }
@@ -121,7 +121,7 @@ export const useWsStore = defineStore('useWsStore', {
         }
         case "group_member_update": {
           // 判断移除的是不是自己，如果不是自己则更新这个群的成员信息
-          if (userStore.userInfo.userId === content.data.body.memberId) {
+          if (userStore.getUserId === content.data.body.memberId) {
             
           } else {
             // 更新这个群的成员信息
@@ -174,7 +174,7 @@ export const useWsStore = defineStore('useWsStore', {
               id: content.data.body.id,
               msg: content.data.body.msg,
               sender: content.data.body.sender,
-              create_at: content.data.body.create_at
+              created_at: content.data.body.created_at
             });
             break;
         }

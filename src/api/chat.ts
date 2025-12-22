@@ -121,10 +121,3 @@ export const forwardMessageApi = (data: IForwardMessageReq) => {
     url: `${baseUrl}/api/chat/forward`
   })
 }
-
-
-// 保留旧的接口名称以兼容现有代码
-export const getRecentChatListApi = recentChatListApi
-export const getcreateConversationApi = conversationInfoApi
-export const getRecentChatInfoApi = conversationInfoApi
-export const getChatHistoryApi = chatHistoryApi

@@ -117,7 +117,7 @@ export default {
     const uploadVoiceFile = async (tempFilePath: string, duration: number): Promise<string> => {
       try {
         const result = await uploadFileApi(tempFilePath,  `voice_${Date.now()}.mp3`);
-        return result.fileName;
+        return result.fileKey;
       } catch (error) {
         logger.error({
           text: '语音文件上传失败',
@@ -130,18 +130,18 @@ export default {
     };
 
     // 发送语音消息
-    const sendVoiceMessage = async (fileName: string, duration: number) => {
+    const sendVoiceMessage = async (fileKey: string, duration: number) => {
       try {
         const messageId = await messageManager.getInstance().sendMessage(
           props.conversationId,
           { 
-            fileName, 
+            fileKey, 
             duration: Math.round(duration / 1000) // 转换为秒
           },
           MessageType.VOICE
         );
         
-        emit('voiceRecorded', { messageId, fileName, duration });
+        emit('voiceRecorded', { messageId, fileKey, duration });
         showToast('语音发送成功', 2000, 'success');
       } catch (error) {
         logger.error({
@@ -183,10 +183,10 @@ export default {
             showToast('正在上传语音文件...', 2000, 'info');
             
             // 上传语音文件
-            const fileName = await uploadVoiceFile(tempFilePath, duration);
+            const fileKey = await uploadVoiceFile(tempFilePath, duration);
             
             // 发送语音消息
-            await sendVoiceMessage(fileName, duration);
+            await sendVoiceMessage(fileKey, duration);
             
           } catch (error) {
             console.error('处理语音消息失败:', error);

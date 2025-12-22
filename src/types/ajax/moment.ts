@@ -3,7 +3,7 @@ export interface IFileInfo {
   /**
    * @description: 文件名
    */
-  fileName: string;
+  fileKey: string;
 }
 
 // 动态模型
@@ -23,7 +23,7 @@ export interface IMomentModel {
   /**
    * @description: 用户头像文件ID
    */
-  fileName: string;
+  fileKey: string;
   /**
    * @description: 动态内容
    */
@@ -71,7 +71,7 @@ export interface IMomentLikeModel {
   /**
    * @description: 用户头像文件ID
    */
-  fileName: string;
+  fileKey: string;
 }
 
 // 评论模型

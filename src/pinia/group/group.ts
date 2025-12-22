@@ -46,7 +46,7 @@ export const useGroupStore = defineStore('useGroupStore', {
     getGroupById: (state) => (groupId: string): IGroupInfo => {
       const group = state.groupMap.get(groupId);
       if (!group) {
-        console.error('当前群组Map keys:', groupId);
+        console.error('当前群组Map keys:', groupId, state.groupMap);
       }
       return group;
     },
@@ -77,8 +77,8 @@ export const useGroupStore = defineStore('useGroupStore', {
     async preloadGroupAvatars() {
       try {
         const fileNames = this.groupList
-          .filter(group => group.fileName)
-          .map(group => group.fileName!);
+          .filter(group => group.avatar)
+          .map(group => group.avatar!);
         
         if (fileNames.length > 0) {
           console.log('预加载群组头像:', fileNames.length, '张');

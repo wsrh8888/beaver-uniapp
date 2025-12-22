@@ -46,10 +46,10 @@
             <view class="result-card" @click="goToDetail">
               <view class="user-profile">
                 <view class="user-avatar">
-                  <BeaverImage :fileName="searchResult.fileName" mode="aspectFill" />
+                  <BeaverImage :fileKey="searchResult.fileKey" mode="aspectFill" />
                 </view>
                 <view class="user-info">
-                  <text class="user-name">{{ searchResult.nickname }}</text>
+                  <text class="user-name">{{ searchResult.nickName }}</text>
                   <text class="user-id">ID: {{ searchResult.userId }}</text>
                 </view>
               </view>
@@ -78,8 +78,8 @@ import type { ISearchRes } from '@/types/ajax/friend';
 
 interface SearchUserInfo {
   userId: string;
-  nickname: string;
-  fileName: string;
+  nickName: string;
+  fileKey: string;
   phone: string;
 }
 
@@ -98,8 +98,8 @@ export default {
     const verificationMessage = ref('我是你的好友');
     const searchResult = ref<ISearchRes>({
       userId: '',
-      nickname: '',
-      fileName: '',
+      nickName: '',
+      fileKey: '',
       abstract: '',
       notice: '',
       isFriend: false,

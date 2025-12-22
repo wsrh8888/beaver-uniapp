@@ -100,15 +100,15 @@ export const useUpdateStore = defineStore('useUpdateStore', {
      * @return {Promise<boolean>} 下载是否成功
      */
     async downloadUpdate(): Promise<boolean> {
-      if (!this.latestVersion?.fileName || this.isDownloading) {
+      if (!this.latestVersion?.fileKey || this.isDownloading) {
         return false;
       }
 
       this.isDownloading = true;
       this.downloadProgress = 0;
 
-      // 通过 fileName 构建下载链接
-      const downloadUrl = previewOnlineFileApi(this.latestVersion.fileName);
+      // 通过 fileKey 构建下载链接
+      const downloadUrl = previewOnlineFileApi(this.latestVersion.fileKey);
 
       return new Promise((resolve) => {
         // #ifdef APP-PLUS

@@ -2,7 +2,7 @@
 	<view class="message-item-wrapper">
 		<view :class="['info', position]">
 			<BeaverImage 
-				:file-name="sender.fileName"
+				:file-name="sender.fileKey"
 				class="img"
 				@click="handleGoDetail"
 			/>
@@ -15,10 +15,10 @@
 				<view class="contentImg" v-if="message.type == 2">
 					<view :style="{ width: imageSize.width + 'rpx', height: imageSize.height + 'rpx' }">
 						<BeaverImage 
-							:file-name="message.imageMsg.fileName"
+							:file-name="message.imageMsg.fileKey"
 							class="imgMsg"
 							mode="aspectFit"
-							@click="preview(message.imageMsg.fileName)"
+							@click="preview(message.imageMsg.fileKey)"
 							@longpress="showMenu"
 							@load="onImageLoad"
 
@@ -28,10 +28,10 @@
 				<!-- 表情 -->
 				<view class="contentEmoji" v-if="message.type == 6">
 					<BeaverImage 
-						:file-name="message.emojiMsg.fileName"
+						:file-name="message.emojiMsg.fileKey"
 						class="emojiMsg"
 						mode="aspectFit"
-						@click="previewEmoji(message.emojiMsg.fileName)"
+						@click="previewEmoji(message.emojiMsg.fileKey)"
 						@longpress="showMenu"
 					/>
 				</view>
@@ -130,17 +130,17 @@ export default {
 			})
 		}
 
-		const preview = (fileName: string) => {
+		const preview = (fileKey: string) => {
 			uni.previewImage({
 				current: 0,
-				urls: [previewOnlineFileApi(fileName)]
+				urls: [previewOnlineFileApi(fileKey)]
 			})
 		}
 		
-		const previewEmoji = (fileName: string) => {
+		const previewEmoji = (fileKey: string) => {
 			uni.previewImage({
 				current: 0,
-				urls: [previewOnlineFileApi(fileName)]
+				urls: [previewOnlineFileApi(fileKey)]
 			})
 		}
 		// 计算图片尺寸
@@ -195,7 +195,7 @@ export default {
 			if (message.value.type === 2 && message.value.imageMsg) {
 				const { width, height } = message.value.imageMsg;
 				if (width && height) {
-					console.log('计算图片尺寸', message.value.imageMsg.fileName,calculateImageSize(width, height));
+					console.log('计算图片尺寸', message.value.imageMsg.fileKey,calculateImageSize(width, height));
 					return calculateImageSize(width, height);
 				}
 			}

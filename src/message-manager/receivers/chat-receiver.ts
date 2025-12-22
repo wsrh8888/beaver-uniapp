@@ -76,7 +76,7 @@ export class ChatReceiver {
       conversationId: messageData.conversationId,
       msg: messageData.msg,
       sender: messageData.sender,
-      create_at: messageData.create_at,
+      created_at: messageData.created_at,
       status: messageData.status || 0
     };
     

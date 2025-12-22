@@ -87,7 +87,7 @@
                 <view class="message-content">
                   <view class="message-header">
                     <view class="message-name">{{ getChatName(chat) }}</view>
-                    <view class="message-time">{{ chat.update_at }}</view>
+                    <view class="message-time">{{ chat.updated_at }}</view>
                   </view>
                   <view class="message-preview">{{ chat.msg_preview }}</view>
                 </view>
@@ -109,7 +109,11 @@ import { formatTime } from '@/utils/time/time';
 import type { IChatInfo } from '@/types/ajax/chat';
 import { parseConversation } from '@/utils/conversation';
 import { useUserStore } from '@/pinia/user/user';
-import { BeaverAvatar, BeaverHeader } from '@/component';
+import BeaverAvatar from '@/component/avatar/avatar.vue';
+import BeaverHeader from '@/component/header/header.vue';
+
+
+
 import Logger from '@/logger/logger';
 import { showToast } from '@/component/toast';
 import { pinnedChatApi } from '@/api/chat';
@@ -280,14 +284,14 @@ export default {
 
     // 从会话ID中获取好友ID
     const getFriendIdFromConversation = (conversationId: string) => {
-      return parseConversation(conversationId, userStore.userInfo.userId);
+      return parseConversation(conversationId, userStore.getUserId);
     };
 
     // 获取聊天名称
     const getChatName = (chat: any) => {
       const friendId = getFriendIdFromConversation(chat.conversationId);
       const friendInfo = friendStore.getFriendByUserId(friendId);
-      return friendInfo?.notice || friendInfo?.nickname || chat.nickname;
+      return friendInfo?.notice || friendInfo?.nickName || chat.nickName;
     };
 
     onMounted(() => {
@@ -523,7 +527,7 @@ export default {
   position: relative;
 }
 
-.fileName::before {
+.fileKey::before {
   content: '';
   position: absolute;
   top: 0;

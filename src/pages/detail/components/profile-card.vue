@@ -4,12 +4,12 @@
 		<view class="profile-header">
 			<view class="user-avatar">
 				<BeaverImage 
-					:fileName="userInfo.fileName"
+					:fileKey="userInfo.fileKey"
 					:image-class="'avatar-img'"
 				/>
 			</view>
 			<view class="user-name">
-				{{ userInfo.nickname }}
+				{{ userInfo.nickName }}
 				<image v-if="userInfo.gender === 'male'" src="@/static/img/detail/gender-male-icon.svg" mode="aspectFit" class="gender-icon" />
 			</view>
 			<view v-if="userInfo.remarkName" class="user-alias">备注: {{ userInfo.remarkName }}</view>
@@ -24,8 +24,8 @@ import BeaverImage from '@/component/image/image.vue';
 
 export interface UserInfo {
 	userId: string;
-	nickname: string;
-	fileName: string;
+	nickName: string;
+	fileKey: string;
 	remarkName?: string;
 	signature?: string;
 	gender?: string;

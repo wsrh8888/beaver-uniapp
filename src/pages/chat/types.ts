@@ -14,7 +14,7 @@ export type ChatType = 'single' | 'group';
 export interface MessageSender {
   userId: string;
   avatar: string;
-  nickname?: string;
+  nickName?: string;
 }
 
 // 文本消息

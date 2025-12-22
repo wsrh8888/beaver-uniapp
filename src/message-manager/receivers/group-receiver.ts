@@ -86,7 +86,7 @@ export class GroupReceiver {
           this.handleNewMemberJoined(groupId);
         } else {
           // 如果是自己加入，需要更新群组信息
-          if (this.userStore.userInfo.userId !== operator) {
+          if (this.userStore.getUserId !== operator) {
             this.groupStore.updateGroupInfo(groupId);
           }
         }
@@ -103,7 +103,7 @@ export class GroupReceiver {
         // 处理移除成员或其他变动
         console.log('群成员变动通知:', memberData);
         // 检查是否自己被移除
-        if (memberId && this.userStore.userInfo.userId === memberId) {
+        if (memberId && this.userStore.getUserId === memberId) {
           console.log('自己被移出群组:', groupId);
           // 从群组列表中移除该群组
           this.groupStore.removeGroup(groupId);

@@ -49,11 +49,11 @@ export class ChatSender {
       conversationId: conversationId,
       msg: this.buildMessageContent(content, type),
       sender: {
-        userId: this.userStore.userInfo.userId,
-        fileName: this.userStore.userInfo.fileName,
-        nickname: this.userStore.userInfo.nickName
+        userId: this.userStore.getUserId,
+        fileKey: this.userStore.userInfo.fileKey,
+        nickName: this.userStore.userInfo.nickName
       },
-      create_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
       status: 0 // 使用数字状态
     };
 
@@ -117,7 +117,7 @@ export class ChatSender {
       case MessageType.EMOJI:
         return {
           type: MessageType.EMOJI,
-          emojiMsg: { fileName: content.fileName, emojiId: content.emojiId, packageId: content.packageId }
+          emojiMsg: { fileKey: content.fileKey, emojiId: content.emojiId, packageId: content.packageId }
         };
       default:
         return {

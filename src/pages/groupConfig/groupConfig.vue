@@ -11,7 +11,7 @@
     <view class="header">
       <view class="group-info">
         <view class="group-avatar" @click="chooseAvatar">
-          <BeaverImage class="avatar-img" :fileName="groupInfo.fileName" mode="aspectFill" />
+          <BeaverImage class="avatar-img" :fileKey="groupInfo.fileKey" mode="aspectFill" />
           <view v-if="isAdmin" class="edit-icon">更换</view>
         </view>
         <view class="group-text">
@@ -34,9 +34,9 @@
         <view class="members-grid">
           <view class="member-item" v-for="(member, index) in groupMembers" :key="index">
             <view class="member-avatar">
-              <BeaverImage :fileName="member.fileName" mode="aspectFill" />
+              <BeaverImage :fileKey="member.fileKey" mode="aspectFill" />
             </view>
-            <text class="member-name">{{ member.nickname }}</text>
+            <text class="member-name">{{ member.nickName }}</text>
           </view>
           
           <view class="member-item" @click="navigateToGroupMember('add')" v-if="isAdmin">
@@ -148,7 +148,7 @@ export default {
     // 判断是否是管理员或群主
     const isAdmin = computed(() => {
       const members = groupStore.getMembersByGroupId(groupId.value);
-      const userInfo = members.find(member => member.userId === userStore.userInfo.userId);
+      const userInfo = members.find(member => member.userId === userStore.getUserId);
       return userInfo?.role === 1 || userInfo?.role === 2;
     });
 
@@ -222,7 +222,7 @@ export default {
       openAlbum('album', 1, CompressMode.CUSTOM, maxSize).then((result: any) => {
         updateGroupInfoApi({
           groupId: groupId.value,
-          fileName: result.fileName
+          fileKey: result.fileKey
         }).then((res) => {
           if (res.code === 0) {
             showToast('修改成功');

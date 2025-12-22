@@ -79,8 +79,8 @@ export const useMomentStore = defineStore('momentStore', {
       const logger = new Logger('朋友圈管理');
       try {
         const fileNames = this.momentList
-          .filter(moment => moment.fileName)
-          .map(moment => moment.fileName!);
+          .filter(moment => moment.fileKey)
+          .map(moment => moment.fileKey!);
         
         if (fileNames.length > 0) {
           console.log('预加载朋友圈图片:', fileNames.length, '张');

@@ -16,7 +16,7 @@
         @click="handleClickGroup(item)"
       >
         <view class="group-avatar">
-          <BeaverImage :file-name="item.fileName" mode="aspectFill" />
+          <BeaverImage :file-name="item.fileKey" mode="aspectFill" />
         </view>
         <view class="group-info">
           <text class="group-name">{{ item.title }}</text>

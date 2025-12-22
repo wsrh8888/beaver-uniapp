@@ -1,8 +1,8 @@
 // 好友验证信息
 export interface IFriendValidInfo {
   userId: string; // 用户Id
-  nickname: string; // 昵称
-  fileName: string; // 头像
+  nickName: string; // 昵称
+  avatar: string; // 头像
   message: string; // 附加消息
   source: string; // 添加好友来源：email/qrcode
   id: number; // 验证记录Id
@@ -18,15 +18,15 @@ export interface IValidListRes {
 }
 
 // 好友列表响应
-export interface IFriendListRes {
+export interface IavatarRes {
   list: IFriendInfo[];
 }
 
 // 好友信息
 export interface IFriendInfo {
   userId: string;
-  nickname: string;
-  fileName: string;
+  nickName: string;
+  avatar: string;
   abstract: string;
   notice: string;
   isFriend: boolean;
@@ -36,7 +36,7 @@ export interface IFriendInfo {
 }
 
 // 好友列表请求
-export interface IFriendListReq {
+export interface IavatarReq {
   page?: number;
   limit?: number;
 }
@@ -72,8 +72,8 @@ export interface ISearchReq {
 // 搜索响应
 export interface ISearchRes {
   userId: string;
-  nickname: string;
-  fileName: string;
+  nickName: string;
+  avatar: string;
   abstract: string;
   notice: string;
   isFriend: boolean;

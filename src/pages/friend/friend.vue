@@ -83,15 +83,15 @@
                 class="avatar"
               >
                 <beaver-image 
-                  v-if="friend.fileName" 
-                  :file-name="friend.fileName" 
+                  v-if="friend.avatar" 
+                  :fileKey="friend.avatar" 
                   mode="aspectFill" 
                   class="avatar-img" 
                 />
-                <text v-else>{{ friend.nickname.charAt(0).toUpperCase() }}</text>
+                <text v-else>{{ friend.nickName.charAt(0).toUpperCase() }}</text>
               </view>
               <view class="friend-content">
-                <view class="friend-name">{{ friend.notice || friend.nickname }}</view>
+                <view class="friend-name">{{ friend.notice || friend.nickName }}</view>
               </view>
             </view>
           </view>
@@ -130,7 +130,7 @@ export default {
       const uniqueLetters = [...new Set(
         friendList.value.map(friend => {
           // 获取名称的首字母并转为大写
-          const firstChar = friend.nickname.charAt(0).toUpperCase();
+          const firstChar = friend.nickName.charAt(0).toUpperCase();
           // 判断是否为英文字母
           return /[A-Z]/.test(firstChar) ? firstChar : '#';
         })
@@ -152,7 +152,7 @@ export default {
       
       // 将好友分到对应的组
       friendList.value.forEach(friend => {
-        const firstChar = friend.nickname.charAt(0).toUpperCase();
+        const firstChar = friend.nickName.charAt(0).toUpperCase();
         const group = /[A-Z]/.test(firstChar) ? firstChar : '#';
         
         if (groups[group]) {
@@ -385,7 +385,7 @@ export default {
   margin-right: 16px;
 }
 
-.fileName::before {
+.avatar::before {
   content: '';
   position: absolute;
   top: 0;

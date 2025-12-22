@@ -17,21 +17,21 @@
 			<view class="user">
 				<!-- <view class="info" v-for="user in userInfo" :key="user.userId">
           <img :src="user.avatar" alt="">
-          <text>{{ user.nickname }}</text>
+          <text>{{ user.nickName }}</text>
           <view>添加</view>
         </view> -->
 
 				<view class="info">
 					<img :src="APP_CONFIG.logo" alt="">
 					<view class="info-right">
-						<text class="nickname">{{ userInfo.nickname }}</text>
+						<text class="nickName">{{ userInfo.nickName }}</text>
 						<view class="add-btn" @click="confirmAddPerson(userInfo)">添加</view>
 					</view>
 				</view>
 				<view class="info">
 					<img :src="APP_CONFIG.logo" alt="">
 					<view class="info-right">
-						<text class="nickname">{{ userInfo.nickname }}</text>
+						<text class="nickName">{{ userInfo.nickName }}</text>
 						<view class="add-btn">添加</view>
 					</view>
 				</view>
@@ -44,7 +44,6 @@
 	import { defineComponent, ref } from "vue";
 	// import { showMsg } from '@/utils/Toast';
 	import {
-		friendListApi,
 		getAddFriendApi,
 		searchApi,
 	} from "@/api/friend";
@@ -177,7 +176,7 @@
 						// border-bottom: 2rpx solid #F5F8FF;
 						border-bottom: 2rpx solid #eee;
 
-						.nickname {
+						.nickName {
 							flex: 1;
 						}
 

@@ -11,11 +11,11 @@
       <!-- 用户信息卡片 -->
       <view class="user-card">
         <view class="user-avatar">
-          <image :src="getAvatarUrl(friendInfo.fileName)" mode="aspectFill" class="avatar-img"></image>
+          <image :src="getAvatarUrl(friendInfo.fileKey)" mode="aspectFill" class="avatar-img"></image>
           <view class="online-status" v-if="friendInfo.isOnline"></view>
         </view>
         <view class="user-info">
-          <text class="user-name">{{ friendInfo.nickname }}</text>
+          <text class="user-name">{{ friendInfo.nickName }}</text>
           <text class="user-id">ID: {{ friendInfo.userId }}</text>
         </view>
       </view>
@@ -55,7 +55,7 @@
           <text class="modal-title">删除好友</text>
         </view>
         <view class="modal-body">
-          <text class="modal-text">确定要删除好友 "{{ friendInfo.nickname }}" 吗？</text>
+          <text class="modal-text">确定要删除好友 "{{ friendInfo.nickName }}" 吗？</text>
           <text class="modal-subtext">删除后将无法恢复，聊天记录也会被清空</text>
         </view>
         <view class="modal-actions">
@@ -94,9 +94,9 @@ export default {
     // 计算属性
     const friendInfo = computed(() => {
       const info = friendStore.getFriendByConversationId(conversationId.value) || {
-        nickname: '未知用户',
+        nickName: '未知用户',
         userId: '',
-        fileName: '',
+        fileKey: '',
         isOnline: false
       };
       return {
@@ -119,8 +119,8 @@ export default {
     });
 
     // 方法
-    const getAvatarUrl = (fileName: string) => {
-      return previewOnlineFileApi(fileName);
+    const getAvatarUrl = (fileKey: string) => {
+      return previewOnlineFileApi(fileKey);
     };
 
     const goBack = () => {

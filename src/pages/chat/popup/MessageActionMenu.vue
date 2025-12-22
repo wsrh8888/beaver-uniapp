@@ -188,12 +188,12 @@ export default {
       if (props.message.type === 2) {
         uni.previewImage({
           current: 0,
-          urls: [props.message.imageMsg.fileName]
+          urls: [props.message.imageMsg.fileKey]
         });
       } else if (props.message.type === 6) {
         uni.previewImage({
           current: 0,
-          urls: [props.message.emojiMsg.fileName]
+          urls: [props.message.emojiMsg.fileKey]
         });
       }
     };

@@ -6,7 +6,7 @@
       class="emoji-item" 
       @tap="addEmoji(emoji)"
     >
-      <image class="emoji-icon" :src="getImageUrl(emoji.fileName)" mode="aspectFit" />
+      <image class="emoji-icon" :src="getImageUrl(emoji.fileKey)" mode="aspectFit" />
       <text class="emoji-name">{{ emoji.title || '表情' }}</text>
     </view>
   </view>
@@ -29,18 +29,18 @@ export default {
     const pageChatStore = usePageChatStore();
 
     // 处理图片URL
-    const getImageUrl = (fileName: string) => {
-      if (!fileName) return ''
-      if (fileName.startsWith('http://') || fileName.startsWith('https://')) {
-        return fileName
+    const getImageUrl = (fileKey: string) => {
+      if (!fileKey) return ''
+      if (fileKey.startsWith('http://') || fileKey.startsWith('https://')) {
+        return fileKey
       }
-      return previewOnlineFileApi(fileName)
+      return previewOnlineFileApi(fileKey)
     }
 
     const addEmoji = (emoji: any) => {
       // 表情包表情直接发送表情消息
       const emojiData = {
-        fileName: emoji.fileName || emoji.file_id,
+        fileKey: emoji.fileKey || emoji.file_id,
         emojiId: emoji.emojiId || emoji.emoji_id || emoji.id,
         packageId: emoji.packageId || emoji.package_id
       }

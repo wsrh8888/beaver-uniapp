@@ -1,6 +1,6 @@
 <template>
   <BeaverImage
-    :fileName="avatarFileName"
+    :file-key="avatarFileName"
     :mode="mode"
     :lazy-load="lazyLoad"
     :image-class="imageClass"
@@ -35,7 +35,7 @@ export default {
       default: ''
     },
     // 直接传入fileName（优先级最高）
-    fileName: {
+    avatar: {
       type: String,
       default: ''
     },
@@ -68,22 +68,25 @@ export default {
      
       
       // 优先级：直接传入的fileName > 根据conversationId获取 > 根据userId获取
-      if (props.fileName) {
-        console.log('Using direct fileName:', props.fileName);
-        return props.fileName;
+      if (props.avatar) {
+        console.log('Using direct avatar:', props.avatar);
+        return props.avatar;
       }
       
       if (props.conversationId) {
         const chatType = getChatType(props.conversationId);
-        
+        console.error('chatType:', chatType, props.conversationId);
         if (chatType === 'single') {
-          // 私聊：从好友列表获取
+          // 私聊：从好 友列表获取
           const friendInfo = friendStore.getFriendByConversationId(props.conversationId);
-          return friendInfo?.fileName;
+          console.error('friendInfo:', friendInfo);
+          return friendInfo?.avatar;
         } else {
+
           // 群聊：从群组列表获取
-          const groupInfo = groupStore.getGroupById(props.conversationId);
-          return groupInfo?.fileName;
+          const groupInfo = groupStore.getGroupById(props.conversationId.replace('group_', ''));
+          console.error('groupInfo:', groupInfo);
+          return groupInfo?.avatar;
         }
       }
       
@@ -91,7 +94,7 @@ export default {
         // 从好友列表获取
         const friendInfo = friendStore.getFriendByUserId(props.userId);
         console.log('Friend info by userId:', friendInfo);
-        return friendInfo?.fileName;
+        return friendInfo?.avatar;
       }
       
       console.log('No avatar found, returning empty string');

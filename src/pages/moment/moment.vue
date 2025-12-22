@@ -13,7 +13,7 @@
         <!-- 用户信息 -->
         <view class="moment-header">
           <view class="user-avatar">
-            <beaver-image class="user-avatar-img" :file-name="item.fileName" mode="aspectFill"></beaver-image>
+            <beaver-image class="user-avatar-img" :file-name="item.fileKey" mode="aspectFill"></beaver-image>
           </view>
           <view class="user-info">
             <view class="user-name">{{ item.userName }}</view>
@@ -32,7 +32,7 @@
             class="image-item"
             @click="previewImage(item.files, imgIndex)"
           >
-            <beaver-image class="image-item-img" :file-name="file.fileName" mode="aspectFill"></beaver-image>
+            <beaver-image class="image-item-img" :file-name="file.fileKey" mode="aspectFill"></beaver-image>
             <!-- 超过9张图片时显示更多提示 -->
             <view class="image-overlay" v-if="item.files.length > 9 && imgIndex === 8">
               <text class="more-count">+{{ item.files.length - 9 }}</text>
@@ -97,7 +97,7 @@ export default {
     const userStore = useUserStore();
 
     const isUserLiked = (item: any) => {
-      const currentUserId = userStore.userInfo.userId;
+      const currentUserId = userStore.getUserId;
       return item.likes && item.likes.some((like: any) => like.userId === currentUserId);
     };
 
@@ -107,7 +107,7 @@ export default {
 
     const toggleLike = async (item: any) => {
       // 检查当前用户是否已经点赞
-      const currentUserId = userStore.userInfo.userId;
+      const currentUserId = userStore.getUserId;
       const hasLiked = isUserLiked(item);
       
       try {
@@ -148,7 +148,7 @@ export default {
 
     const previewImage = (files: any[], current: number) => {
       uni.previewImage({
-        urls: files.map(file => previewOnlineFileApi(file.fileName)),
+        urls: files.map(file => previewOnlineFileApi(file.fileKey)),
         current: files[current].url
       });
     };

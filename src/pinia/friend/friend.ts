@@ -36,6 +36,8 @@ export const useFriendStore = defineStore('friendStore', {
     getFriendByConversationId: (state) => {
       return (conversationId: string): IFriendInfo | undefined => {
         const friend = state.friendList.find(friend => friend.conversationId === conversationId);
+        console.error('friendList:', state.friendList);
+        console.error('friend:', friend);
         if (!friend) {
           console.error('好友信息未找到，conversationId:', conversationId);
         }
@@ -55,8 +57,8 @@ export const useFriendStore = defineStore('friendStore', {
     async preloadFriendAvatars() {
       try {
         const fileNames = this.friendList
-          .filter(friend => friend.fileName)
-          .map(friend => friend.fileName!);
+          .filter(friend => friend.avatar)
+          .map(friend => friend.avatar!);
         
         if (fileNames.length > 0) {
           console.log('预加载好友头像:', fileNames.length, '张');

@@ -16,9 +16,9 @@ export interface IWsContent {
       sender: {
         userId: string;
         avatar: string;
-        nickname: string;
+        nickName: string;
       };
-      create_at: string;
+      created_at: string;
       msgPreview: string;
     };
   };

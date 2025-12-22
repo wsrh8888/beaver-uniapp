@@ -7,10 +7,10 @@ export interface ISearchUser {
 }
 export interface IResSearchUserInfo {
   Abstract: string;
-  fileName: string;
+  fileKey: string;
   conversationId: string;
   isFriend: boolean;
-  nickname: string;
+  nickName: string;
   notice: string;
   userId: string;
 }

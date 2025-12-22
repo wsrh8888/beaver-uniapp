@@ -159,11 +159,11 @@ export default {
 
 		// 获取显示标题
 		const getDisplayTitle = () => {
-			const nickname = conversationInfo.value?.nickname;
-			if (nickname && nickname.length >= 10) {
-				return `${nickname.slice(0, 10)}...`;
+			const nickName = conversationInfo.value?.nickName;
+			if (nickName && nickName.length >= 10) {
+				return `${nickName.slice(0, 10)}...`;
 			}
-			return nickname || '';
+			return nickName || '';
 		};
 
 		return {

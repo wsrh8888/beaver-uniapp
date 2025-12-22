@@ -13,7 +13,7 @@
     <view class="avatar-upload" @click="chooseAvatar">
       <view class="avatar-container">
         <beaver-image 
-          :file-name="userInfo.fileName" 
+          :file-name="userInfo.fileKey" 
           id="avatar-preview" 
           mode="aspectFill"
         ></beaver-image>
@@ -24,9 +24,9 @@
     
     <!-- 个人信息列表 -->
     <view class="info-list">
-      <view class="info-item" @click="openModal('nickname')">
+      <view class="info-item" @click="openModal('nickName')">
         <view class="info-label">昵称</view>
-        <view class="info-content" id="nickname-display">{{ userInfo.nickName }}</view>
+        <view class="info-content" id="nickName-display">{{ userInfo.nickName }}</view>
         <view class="arrow-icon">
           <image src="@/static/img/common/arrow-right.svg" mode="aspectFit"></image>
         </view>
@@ -65,18 +65,18 @@
     
     <!-- 弹窗 - 修改昵称 -->
     <BeaverDialog
-      v-model="modals.nickname"
+      v-model="modals.nickName"
       title="修改昵称"
       size="medium"
       :show-buttons="false"
       @confirm="saveNickname"
     >
       <view class="form-group">
-        <input type="text" class="form-control" v-model="formData.nickname" placeholder="请输入昵称" maxlength="20" />
-        <view class="char-count"><text>{{ formData.nickname.length }}</text>/20</view>
+        <input type="text" class="form-control" v-model="formData.nickName" placeholder="请输入昵称" maxlength="20" />
+        <view class="char-count"><text>{{ formData.nickName.length }}</text>/20</view>
       </view>
       <view class="dialog-actions">
-        <view class="btn-cancel" @click="closeModal('nickname')">取消</view>
+        <view class="btn-cancel" @click="closeModal('nickName')">取消</view>
         <view class="btn-save" @click="saveNickname">确定</view>
       </view>
     </BeaverDialog>
@@ -212,7 +212,7 @@ export default {
     
     // 弹窗状态管理
     const modals = reactive({
-      nickname: false,
+      nickName: false,
       email: false,
       description: false,
       gender: false
@@ -220,7 +220,7 @@ export default {
     
     // 表单数据
     const formData = reactive({
-      nickname: userInfo.value.nickName || '',
+      nickName: userInfo.value.nickName || '',
       email: userInfo.value.email || '',
       emailCode: '',
       bio: userInfo.value.bio || '',
@@ -232,17 +232,17 @@ export default {
     const countdown = ref(0);
     
     // 头像相关
-    const userAvatar = ref(userInfo.value.fileName || '');
+    const userAvatar = ref(userInfo.value.fileKey || '');
     
 
     
     // 监听用户信息变化，更新表单数据
     watch(() => userInfo.value, (newUserInfo) => {
-      formData.nickname = newUserInfo.nickName || '';
+      formData.nickName = newUserInfo.nickName || '';
       formData.email = newUserInfo.email || '';
       formData.bio = newUserInfo.abstract || '';
       formData.gender = newUserInfo.gender || 1;
-      userAvatar.value = newUserInfo.fileName || '';
+      userAvatar.value = newUserInfo.fileKey || '';
     });
     
 
@@ -265,9 +265,9 @@ export default {
     // 打开模态框
     const openModal = (type: string) => {
       switch (type) {
-        case 'nickname':
-          formData.nickname = userInfo.value.nickName || '';
-          modals.nickname = true;
+        case 'nickName':
+          formData.nickName = userInfo.value.nickName || '';
+          modals.nickName = true;
           break;
         case 'email':
           formData.email = '';
@@ -288,8 +288,8 @@ export default {
     // 关闭模态框
     const closeModal = (type: string) => {
       switch (type) {
-        case 'nickname':
-          modals.nickname = false;
+        case 'nickName':
+          modals.nickName = false;
           break;
         case 'email':
           modals.email = false;
@@ -314,7 +314,7 @@ export default {
       const maxSize = 100 * 1024; // 100KB
       openAlbum('album', 1, CompressMode.CUSTOM, maxSize).then((res) => {
         console.log('头像上传成功:', res);
-        userStore.updateUserInfo({ fileName: res.fileName });
+        userStore.updateUserInfo({ fileKey: res.fileKey });
         showToast('头像更新成功');
       }).catch((error) => {
         logger.error({
@@ -330,14 +330,14 @@ export default {
     
     // 保存昵称
     const saveNickname = () => {
-      if (!formData.nickname.trim()) {
+      if (!formData.nickName.trim()) {
         showToast('昵称不能为空');
         return;
       }
       
-      userStore.updateUserInfo({ nickName: formData.nickname.trim() });
+      userStore.updateUserInfo({ nickName: formData.nickName.trim() });
       showToast('修改成功');
-      closeModal('nickname');
+      closeModal('nickName');
     };
     
     // 发送邮箱验证码

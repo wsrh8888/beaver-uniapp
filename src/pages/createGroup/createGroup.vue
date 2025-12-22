@@ -40,10 +40,10 @@
           @click="handleSelect(contact)"
         >
           <view class="contact-avatar">
-            <BeaverImage :file-name="contact.fileName" mode="aspectFill" />
+            <BeaverImage :file-name="contact.fileKey" mode="aspectFill" />
           </view>
           <view class="contact-info">
-            <text class="contact-name">{{ contact.nickname }}</text>
+            <text class="contact-name">{{ contact.nickName }}</text>
             <text class="contact-detail">{{ contact.status }}</text>
           </view>
           <view class="checkbox" :class="{'selected': isSelected(contact.userId)}">
@@ -74,7 +74,7 @@
             :key="contact.userId"
             class="selected-avatar"
           >
-            <BeaverImage :file-name="contact.fileName" mode="aspectFill" />
+            <BeaverImage :file-name="contact.fileKey" mode="aspectFill" />
           </view>
           <view v-if="selectedContacts.length > 3" class="more-avatars">
             +{{ selectedContacts.length - 3 }}
@@ -132,11 +132,11 @@ export default {
     
     const groupedContacts = computed(() => {
       const contacts = friendList.value.filter(friend => 
-        friend.nickname.toLowerCase().includes(searchQuery.value.toLowerCase())
+        friend.nickName.toLowerCase().includes(searchQuery.value.toLowerCase())
       );
       
       return contacts.reduce((groups: any, contact) => {
-        const firstLetter = contact.nickname.charAt(0).toUpperCase();
+        const firstLetter = contact.nickName.charAt(0).toUpperCase();
         if (!groups[firstLetter]) {
           groups[firstLetter] = [];
         }
@@ -211,7 +211,7 @@ export default {
       
       try {
         const res = await groupCreateApi({
-          name: selectedContacts.value.map(item => item.nickname).slice(0, 3).join() + '等人的群聊',
+          name: selectedContacts.value.map(item => item.nickName).slice(0, 3).join() + '等人的群聊',
           userIdList: selectedContacts.value.map(item => item.userId)
         }) as CreateGroupResponse;
 

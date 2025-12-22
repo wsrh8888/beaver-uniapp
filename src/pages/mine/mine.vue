@@ -18,7 +18,7 @@
 				<view class="profile-info" @click="navigateToProfile">
 					<view class="profile-avatar-wrapper">
 						<view class="profile-avatar">
-							<beaver-image v-if="userInfo.userId" :file-name="userInfo.fileName" mode="aspectFill" class="avatar-img"></beaver-image>
+							<beaver-image v-if="userInfo.userId" :file-name="userInfo.fileKey" mode="aspectFill" class="avatar-img"></beaver-image>
 						</view>
 					</view>
 					<view class="profile-name">{{ userInfo.nickName || 'Beaver' }}</view>
@@ -294,7 +294,7 @@ export default {
 }
 
 /* 头像内部高光 */
-.profile-fileName::after {
+.profile-fileKey::after {
 	content: '';
 	position: absolute;
 	top: 0;

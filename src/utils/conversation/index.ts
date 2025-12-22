@@ -13,5 +13,5 @@ export const parseConversation = (conversationID: string, userId: string) =>{
  * @returns 'single' | 'group'
  */
 export const getChatType = (conversationId: string): 'single' | 'group' => {
-  return conversationId.includes('_') ? 'single' : 'group';
+  return conversationId.includes('private_') ? 'single' : 'group';
 }

@@ -3,7 +3,7 @@ export interface IAddEmojiReq {
   /**
    * @description: 表情文件ID
    */
-  fileName: string;
+  fileKey: string;
   /**
    * @description: 表情标题
    */
@@ -53,7 +53,7 @@ export interface IEmojiItem {
   /**
    * @description: 表情文件ID
    */
-  fileName: string;
+  fileKey: string;
   /**
    * @description: 表情标题
    */
@@ -268,7 +268,7 @@ export interface IAddEmojiToPackageReq {
   /**
    * @description: 表情文件ID
    */
-  fileName: string;
+  fileKey: string;
   /**
    * @description: 表情标题
    */
@@ -303,7 +303,7 @@ export interface IEmoji {
   /**
    * @description: 表情文件ID
    */
-  fileName: string;
+  fileKey: string;
   /**
    * @description: 表情标题
    */

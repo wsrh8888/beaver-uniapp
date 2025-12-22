@@ -80,7 +80,7 @@ export interface IGroupInfo {
   /**
    * @description: 群组头像文件ID
    */
-  fileName: string;
+  avatar: string;
   /**
    * @description: 成员数量
    */
@@ -116,7 +116,7 @@ export interface IUpdateGroupInfoReq {
   /**
    * @description: 新群头像文件ID，可选
    */
-  fileName?: string;
+  avatar?: string;
   /**
    * @description: 新群公告，可选
    */
@@ -155,11 +155,11 @@ export interface IGroupMember {
   /**
    * @description: 成员昵称
    */
-  nickname: string;
+  nickName: string;
   /**
    * @description: 成员头像文件ID
    */
-  fileName: string;
+  avatar: string;
   /**
    * @description: 成员角色：0普通成员 1管理员 2群主
    */
@@ -382,7 +382,7 @@ export interface IGroupInfoRes {
   /**
    * @description: 群组头像文件ID
    */
-  fileName: string;
+  avatar: string;
   /**
    * @description: 成员数量
    */
