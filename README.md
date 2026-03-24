@@ -1,6 +1,9 @@
 # 🦫 Beaver IM - 海狸即时通讯
 
-# 移动端正在重构中，大家可以使用pc端进行体验
+# 移动端请使用flutter的版本。
+地址： https://github.com/wsrh8888/beaver-flutter
+
+
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Vue](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/)
