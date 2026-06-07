@@ -65,9 +65,9 @@ export interface IGetLatestVersionRes {
    */
   version?: string;
   /**
-   * @description: 文件ID
+   * @description: 安装包完整 URL
    */
-  fileKey: string;
+  fileUrl: string;
   /**
    * @description: 安装包大小
    */

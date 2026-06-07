@@ -31,7 +31,7 @@
             placeholder="设置密码"
             @input="inputPass"
           >
-          <view v-if="passwordTouched && passwordError" class="error__message">密码长度不少于13位，且不能包含空格</view>
+          <view v-if="passwordTouched && passwordError" class="error__message">密码长度不少于6位，且不能包含空格</view>
         </view>
         
         <view class="form-group">
@@ -121,7 +121,7 @@ export default {
 
     const validatePassword = () => {
       passwordTouched.value = true;
-      passwordError.value = !/^[^\s]{13,}$/.test(password.value);
+      passwordError.value = !/^[^\s]{6,}$/.test(password.value);
     };
     
     const inputPass = (e: any) => {
